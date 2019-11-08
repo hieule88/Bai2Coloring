@@ -1,0 +1,157 @@
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+int V,E,**A,**B,*color,*maukhac; // A la ma tran chua cac canh, B la tran ke
+				//	V,E la so dinh va so canh
+
+void taomatranke(){
+	int i,j;
+	// cap bo nho va khoi tao gia tri dau cho ma tran ke
+	B = (int **)malloc(V*sizeof(int*)); 	
+	for (i=0;i<V;i++){
+		B[i] = (int *)malloc(V*sizeof(int));
+		for(j=0;j<V;j++){
+			B[i][j] = 0;
+		}
+	}
+	// dien thong tin cho ma tran ke
+	for(i=0;i<E;i++){
+		B[A[i][1]][A[i][0]] = 1;
+		B[A[i][0]][A[i][1]] = 1;
+	}
+}
+
+int dienmau(){ // chay vong for tu 0 , khi den so i khac so mau cac dinh khac thi dung luon . ta dc gia tri mau min
+	int i,j,dem=0,min;
+	for(i=0;i<V;i++){
+		for(j=0;j<V;j++){
+			if(i == maukhac[j]){
+				dem=1;
+				break;
+			}
+		}
+		if(dem==0){
+			min =i;
+			break;			
+		}
+		dem =0;
+	}
+	return min;
+}
+
+void tomau(){ // to mau cac dinh theo thuat toan tham lam
+	int i,j,k=0,t;
+	color = (int *)malloc(V*sizeof(int));
+	maukhac = (int *)malloc(V*sizeof(int));
+	for(i=0;i<V;i++){
+		maukhac[i] = -1;
+		color[i] = -1;
+	}
+	color[0] = 0;
+	for(i=1;i<V;i++){
+		for (j=0;j<V;j++){
+			if(B[i][j] == 1){
+				maukhac[k] = color[j];
+				k++;
+			}
+		}
+		color[i] = dienmau();
+		k=0;
+		for(t=0;t<V;t++){
+			maukhac[t] = -1;
+		}
+	}
+}
+
+char *mau(int i){
+	switch(i)
+    {
+    	case 0: return "snow";
+        break;
+        case 1: return "mint cream";
+        break;
+        case 2: return "alice blue";
+        break;
+        case 3: return "lavender blush";
+        break;
+        case 4: return "dim grey";
+        break;
+        case 5: return "NavyBlue";
+        break;
+        case 6: return "DarkSlateBlue";
+        break;
+        case 7: return "SkyBlue";
+        break;
+        case 8: return "DarkTurquoise";
+        break;
+        case 9: return "SeaGreen";
+        break;
+        case 10: return "forest green";
+        break;
+        case 11: return "light goldenrod";
+        break;
+        case 12: return "indian red";
+        break;
+        case 13: return "chocolate";
+        break;
+        case 14: return "HotPink";
+        break;
+        case 15: return "violet";
+        break;
+        case 16: return "orange1";
+        break;
+        case 17: return "tomato1";
+        break;
+        case 18: return "DarkOrchid1";
+        break;
+        case 19: return "purple1";
+        break;
+        case 20: return "DarkMagenta";
+        break;
+    }
+}
+int main(){
+	int i,j,x,y;
+	printf("Nhap so dinh: ");scanf("%d",&V);
+	printf("Nhap so canh: ");scanf("%d",&E);
+	printf("Nhap cac canh: \n");
+	A =(int **)malloc(E*sizeof(int*));
+	for(i=0; i<E; i++ ){
+		A[i] = (int *)malloc(2*sizeof(int));
+		scanf("%d",&A[i][0]);
+		scanf("%d",&A[i][1]);
+	}
+	taomatranke();
+	tomau();
+	
+// ghi ra file dothitomau.dot
+	FILE *fp;
+	fp = fopen("dothitomau.dot","w");
+	fprintf(fp,"graph dothi\n");
+	fprintf(fp,"{\n");
+	for(i=0;i<V;i++){
+		fprintf(fp,"%d [fillcolor=%s, style=filled];\n",i,mau(color[i]));
+	}
+	for(i=0;i<E;i++){
+		fprintf(fp,"%d -- %d;\n",A[i][0],A[i][1]);
+	}
+	fprintf(fp,"}");
+	fclose(fp);
+	
+// giai phong bo nho da cap phat
+	for (i = 0; i < E; i++)
+	{
+    	free(A[i]);
+	}
+	for (i = 0; i < V; i++)
+	{
+    	free(B[i]);
+	}
+	free(A);
+	free(B);
+	free(color);
+	free(maukhac);
+	getch();
+}
